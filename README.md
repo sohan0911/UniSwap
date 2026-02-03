@@ -3,6 +3,9 @@
 ## Project Overview
 UniSwap is a university-focused sharing platform that allows students to exchange books and study resources within their campus community. The aim of the project is to reduce educational costs, minimise waste, and encourage collaboration and sustainability among students.
 
+## Group Name:
+Mugiwara
+
 ## Team Members
 - Dipesh Kumar Yadav 
 - Ankesh Kumar Baitha
