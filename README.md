@@ -1,58 +1,39 @@
-# MySQL, PHPMyAdmin and Node.js (ready for Express development)
+# 📚 UniSwap
 
-This will install Mysql and phpmyadmin (including all dependencies to run Phpmyadmin) AND node.js
+## Project Overview
+UniSwap is a university-focused sharing platform that allows students to exchange books and study resources within their campus community. The aim of the project is to reduce educational costs, minimise waste, and encourage collaboration and sustainability among students.
 
-This receipe is for development - Node.js is run in using supervisor: changes to any file in the app will trigger a rebuild automatically.
+## Group Name:
+Mugiwara
 
-For security, this receipe uses a .env file for credentials.  A sample is provided in the env-sample file. If using these files for a fresh project, copy the env-sample file to a file called .env.  Do NOT commit the changed .env file into your new project for security reasons (in the node package its included in .gitignore so you can't anyway)
+## Team Members
+- Dipesh Kumar Yadav (A00038176) 
+- Ankesh Kumar Baitha (A00032339) 
+- Sohan Giri (A00032373) 
+- Rabin Kumar Dahal (A00025045)
+- Ashikha Ambalathuveettil Ashraf (A00024513)
 
-In node.js, we use the MySQl2 packages (to avoid problems with MySQL8) and the dotenv package to read the environment variables.
+## Sprint 1 Focus
+Sprint 1 focuses on setting up the project workflow and planning. This includes creating the GitHub repository, organising tasks using a Kanban board, defining the project idea, identifying ethical considerations, creating user personas, and setting up a shared development environment using Docker.
 
-Local files are mounted into the container using the 'volumes' directive in the docker-compose.yml for ease of development.
+No functional features are implemented in Sprint 1.
 
-### Super-quickstart your new project:
+## Planned Scope (Future Sprints)
+In later sprints, UniSwap will include features such as:
+- User accounts
+- Book and study resource listings
+- Search and filtering
+- Resource request and exchange functionality
 
-* Make sure that you don't have any other containers running usind docker ps
-* run ```docker-compose up --build```
+## Project Links
+- GitHub Repository: https://github.com/sohan0911/UniSwap
+- Kanban Board: https://github.com/users/sohan0911/projects/1
 
-#### Visit phphmyadmin at:
+## Development Environment
+Docker is used to ensure all team members can run the same development environment.
 
-http://localhost:8081/
-
-#### Visit your express app at:
-
-http://localhost:3000
-
-For reference, see the video at: https://roehampton.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=6f290a6b-ba94-4729-9632-adcf00ac336e
-
-NB if you are running this on your own computer rather than the azure labs that has been set up for you, you will need to install the following:
-
-* node.js  (windows: https://nodejs.org/en/download/)
-* docker desktop (for windows, this will also prompt you to install linux subsystem for windows https://docs.docker.com/desktop/windows/install/ )
-
-### Whats provided in these scaffolding files?
-
-
-  * A docker setup which will provide you with node.js, mysql and phpmyadmin, including the configuration needed so that both node.js AND phpmyadmin can 'see' and connect to your mysql database.  If you don't use docker you'll have to set up and connect each of these components separately.
-  * A basic starting file structure for a node.js app.
-  * A package.json file that will pull in the node.js libraries required and start your app as needed.
-  * A db.js file which provides all the code needed to connect to the mysql database, using the credentials in the .env file, and which provides a query() function that can send queries to the database and receive a result.  In order to use this (ie. interact with the database, you simply need to include this file in any file you create that needs this database interaction) with the following code:
-
-```const db = require('./services/db');
-```
-
-____
-
-Useful commands:
-
-Get a shell in any of the containers
-
+To start the environment:
 ```bash
-docker exec -it <container name> bash -l
-```
+docker-compose up
 
-Once in the database container, you can get a MySQL CLI in the usual way
 
-```bash
-mysql -uroot -p<password> 
-```
