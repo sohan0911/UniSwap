@@ -27,6 +27,9 @@ If disagreements arise:
 - If necessary, unresolved issues may be escalated to the module tutor
 
 ## Academic Integrity
+- All the members should be present in the class while demo if we are absent it should be informed to group members
+- Our teacher has full authority to take actons if we failed to attend the demo 
 - All work must be original and properly referenced
 - Plagiarism or academic misconduct will not be tolerated
 - Team members must adhere to university academic regulations
+  
