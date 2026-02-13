@@ -8,6 +8,7 @@ All team members are expected to:
 - Communicate clearly and constructively
 - Be punctual and prepared for meetings
 - Take responsibility for assigned tasks
+- If somebody absent or delay to demo please inform us before you get sick or any promblem you have.
 
 ## Inclusivity and Respect
 The team is committed to providing an inclusive and supportive environment:
