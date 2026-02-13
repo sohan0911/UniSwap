@@ -8,7 +8,8 @@ All team members are expected to:
 - Treat each other with respect and professionalism
 - Take responsibility for assigned tasks
 - Permission should be taken if you want to delete or replace files already commited, if its done without permission of its owner, action will be taken by teacher 
-
+- consequences might go up to removal from the group
+  
 ## Inclusivity and Respect
 The team is committed to providing an inclusive and supportive environment:
 - Discrimination or harassment of any kind will not be tolerated
