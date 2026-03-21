@@ -4,11 +4,12 @@ This Code of Conduct outlines the expectations for all members of the UniSwap pr
 
 ## Professional Behaviour
 All team members are expected to:
+- All Meeting be recored and updated on github
 - Treat each other with respect and professionalism
-- Communicate clearly and constructively
-- Be punctual and prepared for meetings
 - Take responsibility for assigned tasks
-
+- Permission should be taken if you want to delete or replace files already commited, if its done without permission of its owner, action will be taken by teacher 
+- consequences might go up to removal from the group
+  
 ## Inclusivity and Respect
 The team is committed to providing an inclusive and supportive environment:
 - Discrimination or harassment of any kind will not be tolerated
@@ -27,6 +28,9 @@ If disagreements arise:
 - If necessary, unresolved issues may be escalated to the module tutor
 
 ## Academic Integrity
+- All the members should be present in the class while demo if we are absent it should be informed to group members
+- Our teacher has full authority to take actons if we failed to attend the demo 
 - All work must be original and properly referenced
 - Plagiarism or academic misconduct will not be tolerated
 - Team members must adhere to university academic regulations
+  
