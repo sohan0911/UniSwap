@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title Listings
+  body
+    h1 Listings
+
+    ul
+      each listing in listings
+        li
+          a(href=`/listings/${listing.id}`) #{listing.title} - #{listing.description}

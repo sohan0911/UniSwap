@@ -4,6 +4,10 @@ const express = require("express");
 // Create express app
 var app = express();
 
+// Add the View Engine
+app.set('view engine', 'pug');
+app.set('views', __dirname + '/views');
+
 // Add static files location
 app.use(express.static("static"));
 
@@ -18,7 +22,7 @@ app.get("/", function(req, res) {
 // Create a route for testing the db
 app.get("/db_test", function(req, res) {
     // Assumes a table called test_table exists in your database
-    sql = 'select * from test_table';
+    sql = 'select * from listings';
     db.query(sql).then(results => {
         console.log(results);
         res.send(results)
@@ -45,4 +49,30 @@ app.get("/hello/:name", function(req, res) {
 // Start server on port 3000
 app.listen(3000,function(){
     console.log(`Server running at http://127.0.0.1:3000/`);
+});
+
+// Add the Listings Route
+app.get('/listings', async (req, res) => {
+  try {
+    const listings = await db.query('SELECT * FROM listings');
+    res.render('listings', { listings });
+  } catch (err) {
+    console.error(err);
+    res.send('Error fetching listings');
+  }
+});
+
+// Add Detail Route
+app.get('/listings/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await db.query('SELECT * FROM listings WHERE id = ?', [id]);
+
+    const listing = result[0];
+
+    res.render('listing-detail', { listing });
+  } catch (err) {
+    console.error(err);
+    res.send('Error fetching listing details');
+  }
 });
