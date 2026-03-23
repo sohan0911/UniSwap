@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title Listing Detail
+  body
+    h1 Listing Detail
+
+    if listing
+     p Title: #{listing.title}
+     p Description: #{listing.description}
+    else
+      p Listing not found
