@@ -50,6 +50,36 @@ app.get("/hello/:name", function(req, res) {
     res.send("Hello " + req.params.name);
 });
 
+// Route to display list of all users
+app.get("/users", async function(req, res) {
+    try {
+        const sql = 'SELECT id, name, email, course, year FROM users';
+        const users = await db.query(sql);
+        res.render("users", { users: users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error fetching users");
+    }
+});
+
+// Route to display a single user's profile
+app.get("/users/:id", async function(req, res) {
+    try {
+        const userId = req.params.id;
+        const sql = 'SELECT * FROM users WHERE id = ?';
+        const results = await db.query(sql, [userId]);
+
+        if (results.length === 0) {
+            return res.status(404).send("User not found");
+        }
+
+        res.render("user-profile", { user: results[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error fetching user profile");
+    }
+});
+
 // Start server on port 3000
 app.listen(3000,function(){
     console.log(`Server running at http://127.0.0.1:3000/`);
