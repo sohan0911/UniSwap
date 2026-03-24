@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title Tags
+    link(rel="stylesheet", href="/styles.css")
+  body
+    h1 Tags
+
+    if tags && tags.length
+      ul.tags-list
+        each tag in tags
+          li
+            a.tag(href=`/tags/${tag.id}`) #{tag.name}
+    else
+      p No tags available

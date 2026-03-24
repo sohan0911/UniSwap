@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title Listings
+    link(rel="stylesheet", href="/styles.css")
+  body
+    h1 Listings
+
+    if listings && listings.length
+      ul
+        each listing in listings
+          li
+            a(href=`/listings/${listing.id}`) #{listing.title}
+            p #{listing.description}
+            if listing.tag_names
+              p Tags: #{listing.tag_names}
+    else
+      p No listings found

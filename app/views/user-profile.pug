@@ -1,0 +1,76 @@
+html
+    head
+        title UniSwap - User Profile
+        link(rel="stylesheet", href="/styles.css")
+        style.
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #F5F5F5;
+            }
+            h1 {
+                color: #2D6CDF;
+            }
+            .profile-card {
+                background: white;
+                border-radius: 8px;
+                padding: 30px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .profile-header {
+                border-bottom: 2px solid #2D6CDF;
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+            .profile-header h2 {
+                margin: 0;
+                color: #333;
+            }
+            .profile-field {
+                margin: 15px 0;
+            }
+            .profile-field label {
+                display: block;
+                font-weight: bold;
+                color: #666;
+                margin-bottom: 5px;
+            }
+            .profile-field span {
+                color: #333;
+                font-size: 16px;
+            }
+            .nav {
+                margin-bottom: 20px;
+            }
+            .nav a {
+                color: #2D6CDF;
+                text-decoration: none;
+                margin-right: 15px;
+            }
+            .nav a:hover {
+                text-decoration: underline;
+            }
+    body
+        .nav
+            a(href="/") ← Home
+            a(href="/users") ← All Users
+        if user
+            .profile-card
+                .profile-header
+                    h2= user.name
+                .profile-field
+                    label Email:
+                    span= user.email
+                .profile-field
+                    label Course:
+                    span= user.course || 'Not specified'
+                .profile-field
+                    label Year:
+                    span #{user.year || 'Not specified'}
+                .profile-field
+                    label Member Since:
+                    span= user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'
+        else
+            p User not found.

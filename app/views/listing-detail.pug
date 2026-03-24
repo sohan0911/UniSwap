@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title Listing Detail
+    link(rel="stylesheet", href="/styles.css")
+  body
+    h1 Listing Detail
+
+    if listing
+      p Title: #{listing.title}
+      p Description: #{listing.description}
+      p Price: #{listing.price}
+      p Owner: #{listing.owner_name}
+
+      if tags && tags.length
+        p Tags:
+        ul.tags-list
+          each tag in tags
+            li
+              span.tag #{tag.name}
+      else
+        p No tags available
+    else
+      p Listing not found
