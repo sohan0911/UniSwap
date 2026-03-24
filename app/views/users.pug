@@ -1,6 +1,7 @@
 html
     head
         title UniSwap - Users
+        link(rel="stylesheet", href="/styles.css")
         style.
             body {
                 font-family: Arial, sans-serif;
@@ -65,7 +66,6 @@ html
                     .user-card
                         .user-info
                             h3= user.name
-                            p #{user.course || 'N/A'} - Year #{user.year || 'N/A'}
                             p.small #{user.email}
                         a.view-profile(href="/users/" + user.id) View Profile
             else

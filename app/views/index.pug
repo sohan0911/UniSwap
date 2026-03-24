@@ -1,39 +1,58 @@
-html
-    head
-        title UniSwap - Home
-        style.
-            body {
-                font-family: Arial, sans-serif;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-                background-color: #F5F5F5;
-            }
-            h1 {
-                color: #2D6CDF;
-            }
-            .nav {
-                background: white;
-                padding: 15px;
-                border-radius: 8px;
-                margin: 20px 0;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-            .nav a {
-                display: inline-block;
-                background-color: #2D6CDF;
-                color: white;
-                padding: 10px 20px;
-                text-decoration: none;
-                border-radius: 4px;
-                margin-right: 10px;
-            }
-            .nav a:hover {
-                background-color: #1e5bc4;
-            }
-    body
-        h1 Welcome to UniSwap
-        p A platform for students to share and exchange study resources.
-        .nav
-            a(href="/users") View All Users
-            a(href="/db_test") Test Database
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title UniSwap – Home
+    link(rel="stylesheet", href="/styles.css")
+  body.homepage
+    header.site-header
+      nav.site-nav(role="navigation" aria-label="Main")
+        a.nav-brand(href="/") UniSwap
+        ul.nav-links
+          li
+            a.nav-link(href="/") Home
+          li
+            a.nav-link(href="/listings") Listings
+          li
+            a.nav-link(href="/users") Users
+          li
+            a.nav-link(href="/tags") Tags
+
+    main.site-main
+      section.hero
+        h1.hero-title Share. Save. Support Your Community.
+        p.hero-description
+          | UniSwap helps students swap books and study materials, cut costs, and keep useful resources in circulation on campus.
+        .cta-group
+          a.btn.btn-primary(href="/listings") Browse Listings
+          a.btn.btn-secondary(href="/users") View Users
+
+      section.features(aria-labelledby="features-heading")
+        h2#features-heading.section-title Why UniSwap?
+        ul.feature-grid
+          li.feature-card
+            h3.feature-title Save Money
+            p.feature-text Buy and sell second-hand books and notes at student-friendly prices.
+          li.feature-card
+            h3.feature-title Reduce Waste
+            p.feature-text Give textbooks and handouts a second life instead of letting them gather dust.
+          li.feature-card
+            h3.feature-title Connect with Students
+            p.feature-text Meet others on your course and build a simple, trusted sharing network.
+
+      section.recent-listings(aria-labelledby="recent-heading")
+        h2#recent-heading.section-title Recent listings
+        if listings && listings.length
+          p.section-lead Latest items on UniSwap.
+          ul.listings-preview
+            each listing in listings
+              li.listing-card
+                a(href=`/listings/${listing.id}`)
+                  h3.listing-title= listing.title
+                  p.listing-meta #{listing.description && listing.description.length > 120 ? listing.description.substring(0, 120) + '…' : (listing.description || '')}
+        else
+          p.section-lead No listings yet—check back soon or browse all listings.
+
+    footer.site-footer
+      p.footer-text © 2026 UniSwap – Built for students

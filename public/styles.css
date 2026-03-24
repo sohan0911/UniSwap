@@ -1,0 +1,222 @@
+/* UniSwap – base styles for homepage and shared layout hooks */
+
+body.homepage {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  line-height: 1.5;
+  color: #222;
+  background: #f5f5f5;
+}
+
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.site-nav {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.nav-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #2d6cdf;
+  text-decoration: none;
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.nav-link {
+  color: #2d6cdf;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.site-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+.hero {
+  margin-bottom: 2.5rem;
+}
+
+.hero-title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  color: #1a1a1a;
+  margin: 0 0 0.75rem;
+}
+
+.hero-description {
+  max-width: 40rem;
+  margin: 0 0 1.25rem;
+  color: #444;
+}
+
+.cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #2d6cdf;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1e5bc4;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #2d6cdf;
+  border: 2px solid #2d6cdf;
+}
+
+.btn-secondary:hover {
+  background: #eef4fd;
+}
+
+.features {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-size: 1.35rem;
+  margin: 0 0 1rem;
+  color: #1a1a1a;
+}
+
+.section-lead {
+  color: #555;
+  margin: 0 0 1rem;
+}
+
+.feature-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.feature-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.feature-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #2d6cdf;
+}
+
+.feature-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.recent-listings {
+  margin-bottom: 2rem;
+}
+
+.listings-preview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.listing-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.listing-title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.listing-meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.site-footer {
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.footer-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Tags (list page + listing detail) */
+.tags-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+a.tag,
+span.tag {
+  display: inline-block;
+  background: #e8f0fe;
+  color: #2d6cdf;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+a.tag {
+  text-decoration: none;
+}
+
+a.tag:hover {
+  background: #2d6cdf;
+  color: #fff;
+}
