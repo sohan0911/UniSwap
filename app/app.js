@@ -4,19 +4,10 @@ const express = require("express");
 // Create express app
 var app = express();
 
-<<<<<<< Updated upstream
-// Add static files location
-app.use(express.static("static"));
-
-// Use the Pug templating engine
-app.set('view engine', 'pug');
-app.set('views', './app/views');
-=======
 app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
 
 app.use(express.static("public"));
->>>>>>> Stashed changes
 
 // Get the functions in the db.js file to use
 const db = require('./services/db');
@@ -60,8 +51,6 @@ app.get("/hello/:name", function(req, res) {
     res.send("Hello " + req.params.name);
 });
 
-<<<<<<< Updated upstream
-=======
 // Route to display list of all users
 app.get("/users", async function(req, res) {
     try {
@@ -167,7 +156,6 @@ app.get('/listings/:id', async (req, res) => {
   }
 });
 
->>>>>>> Stashed changes
 // Start server on port 3000
 app.listen(3000,function(){
     console.log(`Server running at http://127.0.0.1:3000/`);
