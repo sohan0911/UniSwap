@@ -1,59 +1,40 @@
-doctype html
-html(lang="en")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title UniSwap – Home
-    link(rel="stylesheet", href="/styles.css")
-  body.homepage
-    header.site-header
-      nav.site-nav(role="navigation" aria-label="Main")
-        a.nav-brand(href="/") UniSwap
-        ul.nav-links
-          li
-            a.nav-link(href="/") Home
-          li
-            a.nav-link(href="/listings") Listings
-          li
-            a.nav-link(href="/users") Users
-          li
-            a.nav-link(href="/tags") Tags
+extends layout
 
-    main.site-main
-      section.hero
-        h1.hero-title Share. Save. Support Your Community.
-        p.hero-description
-          | UniSwap helps students swap books and study materials, cut costs, and keep useful resources in circulation on campus.
-        .cta-group
-          a.btn.btn-primary(href="/listings") Browse Listings
-          a.btn.btn-secondary(href="/listings/new") Add listing
-          a.btn.btn-secondary(href="/users") View Users
+block vars
+  - var title = "Home"
+  - var activeNav = "home"
 
-      section.features(aria-labelledby="features-heading")
-        h2#features-heading.section-title Why UniSwap?
-        ul.feature-grid
-          li.feature-card
-            h3.feature-title Save Money
-            p.feature-text Buy and sell second-hand books and notes at student-friendly prices.
-          li.feature-card
-            h3.feature-title Reduce Waste
-            p.feature-text Give textbooks and handouts a second life instead of letting them gather dust.
-          li.feature-card
-            h3.feature-title Connect with Students
-            p.feature-text Meet others on your course and build a simple, trusted sharing network.
+block content
+  section.hero
+    h1.hero-title Share. Save. Support Your Community.
+    p.hero-description
+      | UniSwap helps students swap books and study materials, cut costs, and keep useful resources in circulation on campus.
+    .cta-group
+      a.btn.btn-primary(href="/listings") Browse Listings
+      a.btn.btn-secondary(href="/listings/new") Add Listing
 
-      section.recent-listings(aria-labelledby="recent-heading")
-        h2#recent-heading.section-title Recent listings
-        if listings && listings.length
-          p.section-lead Latest items on UniSwap.
-          ul.listings-preview
-            each listing in listings
-              li.listing-card
-                a(href=`/listings/${listing.id}`)
-                  h3.listing-title= listing.title
-                  p.listing-meta #{listing.description && listing.description.length > 120 ? listing.description.substring(0, 120) + '…' : (listing.description || '')}
-        else
-          p.section-lead No listings yet—check back soon or browse all listings.
+  section.section(aria-labelledby="features-heading")
+    h2#features-heading.section-title Why UniSwap?
+    ul.feature-grid
+      li.feature-card
+        h3.feature-title Save Money
+        p.feature-text Buy and sell second-hand books and notes at student-friendly prices.
+      li.feature-card
+        h3.feature-title Reduce Waste
+        p.feature-text Give textbooks and handouts a second life instead of letting them gather dust.
+      li.feature-card
+        h3.feature-title Connect with Students
+        p.feature-text Meet others on your course and build a simple, trusted sharing network.
 
-    footer.site-footer
-      p.footer-text © 2026 UniSwap – Built for students
+  section.section(aria-labelledby="recent-heading")
+    h2#recent-heading.section-title Recent listings
+    if listings && listings.length
+      p.section-lead Latest items on UniSwap.
+      ul.listings-preview
+        each listing in listings
+          li.listing-card
+            a(href=`/listings/${listing.id}`)
+              h3.listing-title= listing.title
+              p.listing-meta #{listing.description && listing.description.length > 120 ? listing.description.substring(0, 120) + '…' : (listing.description || '')}
+    else
+      p.section-lead No listings yet—check back soon or browse all listings.

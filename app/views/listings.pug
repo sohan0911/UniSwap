@@ -1,22 +1,25 @@
-doctype html
-html
-  head
-    title Listings
-    link(rel="stylesheet", href="/styles.css")
-  body.page-shell
-    h1 Listings
-    p
-      a.btn.btn-primary(href="/listings/new") Add listing
+extends layout
 
-    if listings && listings.length
-      ul.listings-page-list
-        each listing in listings
-          li.listing-row
-            a.listing-row-title(href=`/listings/${listing.id}`)= listing.title
-            p.listing-row-desc= listing.description
-            if listing.tag_names
-              p.listing-tags-line
-                span Tags:&nbsp;
-                span.tag-names-text= listing.tag_names
-    else
-      p No listings found
+block vars
+  - var title = "Listings"
+  - var activeNav = "listings"
+
+block content
+  .page-header
+    h1 Listings
+    p.page-lead Browse what other students are sharing.
+    p
+      a.btn.btn-primary(href="/listings/new") + Add listing
+
+  if listings && listings.length
+    ul.listings-page-list
+      each listing in listings
+        li.listing-row
+          a.listing-row-title(href=`/listings/${listing.id}`)= listing.title
+          p.listing-row-desc= listing.description
+          if listing.tag_names
+            p.listing-tags-line
+              span Tags:&nbsp;
+              span.tag-names-text= listing.tag_names
+  else
+    .alert.alert-warning No listings found. Be the first to add one!
