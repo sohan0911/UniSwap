@@ -1,0 +1,36 @@
+extends layout
+
+block vars
+  - var title = "Sign Up"
+
+block content
+  .form-card
+    h1 Create your account
+    p.form-lead Join UniSwap to start sharing with other students.
+
+    if error
+      .alert.alert-error= error
+
+    form(action="/signup" method="POST" novalidate)
+      .form-group
+        label(for="name") Name
+        input.form-input#name(type="text" name="name" required value=(body && body.name) || "")
+      .form-group
+        label(for="email") Email
+        input.form-input#email(type="email" name="email" required autocomplete="email" value=(body && body.email) || "")
+      .form-group
+        label(for="course") Course
+        input.form-input#course(type="text" name="course" placeholder="e.g. Computer Science" value=(body && body.course) || "")
+        p.form-hint Optional
+      .form-group
+        label(for="year") Year of study
+        input.form-input#year(type="number" name="year" min="1" max="10" value=(body && body.year) || "")
+        p.form-hint Optional
+      .form-group
+        label(for="password") Password
+        input.form-input#password(type="password" name="password" required autocomplete="new-password" minlength="6")
+        p.form-hint At least 6 characters.
+      button.btn.btn-primary.btn-block(type="submit") Create Account
+      p.form-footer
+        | Already have an account?&nbsp;
+        a(href="/login") Log In

@@ -1,37 +1,39 @@
-doctype html
-html
-  head
-    title= listing ? listing.title : "Listing"
-    link(rel="stylesheet", href="/styles.css")
-  body.page-shell.listing-detail-page
-    p.nav-back
-      a(href="/listings") ← All listings
-    if listing
-      article.listing-detail-card
-        if listing.image_url
-          .listing-image-wrap
-            img.listing-image(src=listing.image_url, alt=listing.title)
+extends layout
+
+block vars
+  - var title = listing ? listing.title : "Listing"
+  - var activeNav = "listings"
+
+block content
+  p.nav-back
+    a(href="/listings") ← All listings
+
+  if listing
+    article.listing-detail-card
+      if listing.image_url
+        .listing-image-wrap
+          img.listing-image(src=listing.image_url, alt=listing.title)
+      else
+        .listing-image-placeholder(aria-hidden="true") No image available
+      h1.listing-detail-title= listing.title
+      if listing.price != null && listing.price !== undefined
+        p.listing-price Price: #{listing.price}
+      p.listing-description= listing.description
+      if listing.owner_name || listing.owner_email
+        section.listing-owner
+          h2 Seller
+          if listing.owner_name
+            p= listing.owner_name
+          if listing.owner_email
+            p.text-muted= listing.owner_email
+      section.listing-tags-section
+        h2 Tags
+        if tags && tags.length
+          ul.tags-list
+            each tag in tags
+              li
+                a.tag(href=`/tags/${tag.id}`)= tag.name
         else
-          .listing-image-placeholder(aria-hidden="true") No image
-        h1.listing-detail-title= listing.title
-        if listing.price != null && listing.price !== undefined
-          p.listing-price Price: #{listing.price}
-        p.listing-description= listing.description
-        if listing.owner_name || listing.owner_email
-          section.listing-owner
-            h2 Seller
-            if listing.owner_name
-              p= listing.owner_name
-            if listing.owner_email
-              p.text-muted= listing.owner_email
-        section.listing-tags-section
-          h2 Tags
-          if tags && tags.length
-            ul.tags-list
-              each tag in tags
-                li
-                  a.tag(href=`/tags/${tag.id}`)= tag.name
-          else
-            p No tags available
-    else
-      p Listing not found
+          p.text-muted No tags available
+  else
+    .alert.alert-error Listing not found
