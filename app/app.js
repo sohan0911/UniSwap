@@ -1,5 +1,9 @@
 // Import express.js
 const express = require("express");
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+
+// Create express app
 var app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -9,6 +13,15 @@ app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 
 app.use(express.static("public"));
+// Add static files location
+app.use(express.static("static"));
+app.use(express.urlencoded({ extended: true }));
+
+app.use(session({
+  secret: 'uniswapsecret',
+  resave: false,
+  saveUninitialized: false
+}));
 
 const db = require("./services/db");
 const session = require("express-session");
@@ -83,6 +96,35 @@ app.get("/tags", async function (req, res) {
     console.error(error);
     res.status(500).send("Error fetching tags");
   }
+// Register route
+app.get('/register', function(req, res) {
+    res.render('register');
+});
+
+app.post('/register', async function(req, res) {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        return res.send('All fields are required');
+    }
+
+    if (password.length < 6) {
+        return res.send('Password must be at least 6 characters');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await db.query(
+        'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+        [name, email, hashedPassword]
+    );
+
+    res.redirect('/login');
+});
+
+// Start server on port 3000
+app.listen(3000,function(){
+    console.log(`Server running at http://127.0.0.1:3000/`);
 });
 
 app.get("/tags/:id", async function (req, res) {
@@ -328,4 +370,58 @@ app.post("/listings/:id/rate", async (req, res) => {
 // ---------------- START SERVER ----------------
 app.listen(3000, function () {
   console.log(`Server running at http://127.0.0.1:3000/`);
+});
+// login route
+
+app.get('/login', function(req, res) {
+    res.render('login');
+});
+
+app.post('/login', async function(req, res) {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.send('Enter email and password');
+    }
+
+    const users = await db.query(
+        'SELECT * FROM users WHERE email = ?',
+        [email]
+    );
+
+    if (users.length === 0) {
+        return res.send('User not found');
+    }
+
+    const user = users[0];
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+        return res.send('Wrong password');
+    }
+
+    req.session.user = user;
+
+    res.redirect('/profile');
+});
+
+// profile page route
+app.get('/profile', function(req, res) {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    res.send(
+        'Welcome ' +
+        req.session.user.name +
+        ' | <a href="/logout">Logout</a>'
+    );
+});
+
+// Logout Route
+app.get('/logout', function(req, res) {
+    req.session.destroy(function() {
+        res.redirect('/login');
+    });
 });
