@@ -11,6 +11,20 @@ app.set("views", __dirname + "/views");
 app.use(express.static("public"));
 
 const db = require("./services/db");
+const session = require("express-session");
+const bcrypt = require("bcryptjs");
+
+app.use(session({
+  secret: "uniswap-secret-key-123",
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Make user available to all templates globally
+app.use((req, res, next) => {
+  res.locals.loggedInUser = req.session.user;
+  next();
+});
 
 // ---------------- HOME PAGE ----------------
 app.get("/", async function (req, res) {
@@ -209,6 +223,86 @@ app.get("/listings/:id", async (req, res) => {
   }
 });
 
+app.get("/signup", function (req, res) {
+  res.render("signup", { error: null, body: {} });
+});
+
+app.post("/signup", async function (req, res) {
+  try {
+    const { name, email, course, year, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).render("signup", { error: "Name, email, and password are required.", body: req.body });
+    }
+    
+    const existing = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (existing && existing.length > 0) {
+      return res.status(400).render("signup", { error: "Email already exists.", body: req.body });
+    }
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await db.query(
+      "INSERT INTO users (name, email, course, year, password) VALUES (?, ?, ?, ?, ?)", 
+      [name, email, course || null, year || null, hashedPassword]
+    );
+    
+    req.session.user = {
+      id: result.insertId,
+      name: name,
+      email: email,
+      course: course,
+      year: year
+    };
+    
+    res.redirect("/");
+  } catch (err) {
+    console.error("[POST /signup]", err);
+    res.status(500).render("signup", { error: "Could not create user.", body: req.body });
+  }
+});
+
+app.get("/login", function (req, res) {
+  res.render("login", { error: null });
+});
+
+app.post("/login", async function (req, res) {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).render("login", { error: "Email and password are required." });
+    }
+    
+    const rows = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const user = rows[0];
+    
+    if (!user) {
+      return res.status(401).render("login", { error: "Invalid credentials." });
+    }
+    
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).render("login", { error: "Invalid credentials." });
+    }
+    
+    req.session.user = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      course: user.course,
+      year: user.year
+    };
+    
+    res.redirect("/");
+  } catch (err) {
+    console.error("[POST /login]", err);
+    res.status(500).render("login", { error: "Error during login." });
+  }
+});
+
+app.get("/logout", function (req, res) {
+  req.session.destroy();
+  res.redirect("/");
+});
+
 // ---------------- SUBMIT RATING ----------------
 app.post("/listings/:id/rate", async (req, res) => {
   const listingId = req.params.id;
@@ -230,7 +324,8 @@ app.post("/listings/:id/rate", async (req, res) => {
   }
 });
 
+
 // ---------------- START SERVER ----------------
 app.listen(3000, function () {
-  console.log("Server running at http://127.0.0.1:3000/");
+  console.log(`Server running at http://127.0.0.1:3000/`);
 });
