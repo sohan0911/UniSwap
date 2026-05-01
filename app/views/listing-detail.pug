@@ -1,12 +1,66 @@
-doctype html
-html
-  head
-    title Listing Detail
-  body
-    h1 Listing Detail
+extends layout
 
-    if listing
-     p Title: #{listing.title}
-     p Description: #{listing.description}
-    else
-      p Listing not found
+block vars
+  - var title = listing ? listing.title : "Listing"
+  - var activeNav = "listings"
+
+block content
+  p.nav-back
+    a(href="/listings") ← All listings
+
+  if listing
+    article.listing-detail-card
+      if listing.image_url
+        .listing-image-wrap
+          img.listing-image(src=listing.image_url, alt=listing.title)
+      else
+        .listing-image-placeholder(aria-hidden="true") No image available
+      h1.listing-detail-title= listing.title
+      if listing.price != null && listing.price !== undefined
+        p.listing-price Price: #{listing.price}
+      p.listing-description= listing.description
+      if listing.owner_name || listing.owner_email
+        section.listing-owner
+          h2 Seller
+          if listing.owner_name
+            p= listing.owner_name
+          if listing.owner_email
+            p.text-muted= listing.owner_email
+      section.listing-tags-section
+        h2 Tags
+        if tags && tags.length
+          ul.tags-list
+            each tag in tags
+              li
+                a.tag(href=`/tags/${tag.id}`)= tag.name
+        else
+          p.text-muted No tags available
+
+    section.listing-ratings
+      h2 Ratings
+      if ratings && ratings.length
+        each r in ratings
+          .rating-item
+            p.rating-score Rating: #{r.rating}/5
+            if r.comment
+              p.rating-comment= r.comment
+            p.text-muted By #{r.user_name}
+      else
+        p.text-muted No ratings yet.
+
+      form.form-card(action=`/listings/${listing.id}/rate` method="POST")
+        h3 Leave a Rating
+        .form-group
+          label(for="rating") Rating (1–5):
+          select.form-control(name="rating" id="rating" required)
+            option(value="1") 1
+            option(value="2") 2
+            option(value="3") 3
+            option(value="4") 4
+            option(value="5") 5
+        .form-group
+          label(for="comment") Comment:
+          textarea.form-control(name="comment" id="comment" rows="3")
+        button.btn.btn-primary(type="submit") Submit Rating
+  else
+    .alert.alert-error Listing not found

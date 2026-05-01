@@ -1,0 +1,28 @@
+extends layout
+
+block vars
+  - var title = user ? user.name : "User Profile"
+  - var activeNav = "users"
+
+block content
+  p.nav-back
+    a(href="/users") ← All Users
+
+  if user
+    .profile-card
+      .profile-header
+        h2= user.name
+      .profile-field
+        label Email
+        span= user.email
+      .profile-field
+        label Course
+        span= user.course || 'Not specified'
+      .profile-field
+        label Year
+        span #{user.year || 'Not specified'}
+      .profile-field
+        label Member Since
+        span= user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'
+  else
+    .alert.alert-error User not found.

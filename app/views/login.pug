@@ -1,3 +1,27 @@
+extends layout
+
+block vars
+  - var title = "Log In"
+
+block content
+  .form-card
+    h1 Welcome back
+    p.form-lead Log in to your UniSwap account.
+
+    if error
+      .alert.alert-error= error
+
+    form(action="/login" method="POST" novalidate)
+      .form-group
+        label(for="email") Email
+        input.form-input#email(type="email" name="email" required autocomplete="email")
+      .form-group
+        label(for="password") Password
+        input.form-input#password(type="password" name="password" required autocomplete="current-password")
+      button.btn.btn-primary.btn-block(type="submit") Log In
+      p.form-footer
+        | Don't have an account?&nbsp;
+        a(href="/signup") Sign Up
 doctype html
 html
   head

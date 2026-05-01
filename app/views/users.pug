@@ -1,0 +1,21 @@
+extends layout
+
+block vars
+  - var title = "Users"
+  - var activeNav = "users"
+
+block content
+  .page-header
+    h1 All Users
+    p.page-lead Members of the UniSwap community.
+
+  if users && users.length > 0
+    .user-list
+      each user in users
+        .user-card
+          .user-info
+            h3= user.name
+            p= user.email
+          a.view-profile(href="/users/" + user.id) View Profile
+  else
+    .alert.alert-warning No users found.

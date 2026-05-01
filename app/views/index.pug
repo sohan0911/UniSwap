@@ -1,6 +1,40 @@
-html 
-    head    
-        title Title here...
-    body
-       h1 Heading here...
-       p first paragraph xxx
+extends layout
+
+block vars
+  - var title = "Home"
+  - var activeNav = "home"
+
+block content
+  section.hero
+    h1.hero-title Share. Save. Support Your Community.
+    p.hero-description
+      | UniSwap helps students swap books and study materials, cut costs, and keep useful resources in circulation on campus.
+    .cta-group
+      a.btn.btn-primary(href="/listings") Browse Listings
+      a.btn.btn-secondary(href="/listings/new") Add Listing
+
+  section.section(aria-labelledby="features-heading")
+    h2#features-heading.section-title Why UniSwap?
+    ul.feature-grid
+      li.feature-card
+        h3.feature-title Save Money
+        p.feature-text Buy and sell second-hand books and notes at student-friendly prices.
+      li.feature-card
+        h3.feature-title Reduce Waste
+        p.feature-text Give textbooks and handouts a second life instead of letting them gather dust.
+      li.feature-card
+        h3.feature-title Connect with Students
+        p.feature-text Meet others on your course and build a simple, trusted sharing network.
+
+  section.section(aria-labelledby="recent-heading")
+    h2#recent-heading.section-title Recent listings
+    if listings && listings.length
+      p.section-lead Latest items on UniSwap.
+      ul.listings-preview
+        each listing in listings
+          li.listing-card
+            a(href=`/listings/${listing.id}`)
+              h3.listing-title= listing.title
+              p.listing-meta #{listing.description && listing.description.length > 120 ? listing.description.substring(0, 120) + '…' : (listing.description || '')}
+    else
+      p.section-lead No listings yet—check back soon or browse all listings.
