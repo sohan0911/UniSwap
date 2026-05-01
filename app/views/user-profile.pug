@@ -13,6 +13,12 @@ block content
       .profile-header
         h2= user.name
       .profile-field
+        label Points
+        span= user.points != null ? user.points : 0
+      .profile-field
+        label Trust rating
+        span #{(user.avg_rating != null ? Number(user.avg_rating).toFixed(1) : '0.0')} / 5 (#{user.rating_count || 0} ratings)
+      .profile-field
         label Email
         span= user.email
       .profile-field
@@ -24,5 +30,32 @@ block content
       .profile-field
         label Member Since
         span= user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'
+
+    if loggedInUser && loggedInUser.id != user.id
+      section.user-rate
+        form.form-card(action=`/users/${user.id}/rate` method="POST")
+          h3 Rate this user (after a successful swap)
+          .form-group
+            label(for="rating") Rating (1–5)
+            select.form-control(name="rating" id="rating" required)
+              option(value="1") 1
+              option(value="2") 2
+              option(value="3") 3
+              option(value="4") 4
+              option(value="5") 5
+          .form-group
+            label(for="comment") Comment (optional)
+            textarea.form-control(name="comment" id="comment" rows="3")
+          button.btn.btn-primary(type="submit") Submit rating
+
+    if ratings && ratings.length
+      section.user-ratings
+        h3 Recent ratings
+        each r in ratings
+          .rating-item
+            p.rating-score Rating: #{r.rating}/5
+            if r.comment
+              p.rating-comment= r.comment
+            p.text-muted By #{r.rater_name}
   else
     .alert.alert-error User not found.

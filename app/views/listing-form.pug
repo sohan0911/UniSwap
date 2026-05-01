@@ -26,6 +26,12 @@ block content
         label(for="description") Description
         textarea.form-textarea#description(name="description", rows="5", required)= body && body.description ? body.description : ""
       .form-group
+        label(for="has_item") I have
+        input.form-input#has_item(type="text", name="has_item", placeholder="e.g. Java notes", value=(body && body.has_item) || "", required)
+      .form-group
+        label(for="wants_item") I want
+        input.form-input#wants_item(type="text", name="wants_item", placeholder="e.g. Python past papers", value=(body && body.wants_item) || "", required)
+      .form-group
         label(for="tags") Tags
         input.form-input#tags(type="text", name="tags", placeholder="books, math, used", value=(body && body.tags) || "")
         p.form-hint Comma-separated.

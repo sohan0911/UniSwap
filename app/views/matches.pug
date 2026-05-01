@@ -1,0 +1,30 @@
+extends layout
+
+block vars
+  - var title = "Matches"
+  - var activeNav = "matches"
+
+block content
+  .page-header
+    h1 Swap matches
+    p.page-lead Listings that match what you have and want.
+
+  if matches && matches.length
+    ul.listings-page-list
+      each m in matches
+        li.listing-row
+          p
+            strong Your listing:&nbsp;
+            a(href=`/listings/${m.my_listing_id}`)= m.my_title
+          p.text-muted Has: #{m.my_has || '—'} · Wants: #{m.my_wants || '—'}
+          p
+            strong Match:&nbsp;
+            a(href=`/listings/${m.other_listing_id}`)= m.other_title
+            |  by&nbsp;
+            a(href=`/users/${m.other_user_id}`)= m.other_user_name
+          p.text-muted Has: #{m.other_has || '—'} · Wants: #{m.other_wants || '—'}
+          p
+            a.btn.btn-secondary(href=`/listings/${m.other_listing_id}`) View listing
+  else
+    .alert.alert-warning No matches found yet. Try adding more listings with clear “has” and “wants”.
+

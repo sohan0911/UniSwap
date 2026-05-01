@@ -19,9 +19,20 @@ block content
       if listing.price != null && listing.price !== undefined
         p.listing-price Price: #{listing.price}
       p.listing-description= listing.description
+      if listing.has_item || listing.wants_item
+        section.listing-swap-meta
+          h2 Swap details
+          if listing.has_item
+            p
+              strong Has:&nbsp;
+              span= listing.has_item
+          if listing.wants_item
+            p
+              strong Wants:&nbsp;
+              span= listing.wants_item
       if listing.owner_name || listing.owner_email
         section.listing-owner
-          h2 Seller
+          h2 Owner
           if listing.owner_name
             p= listing.owner_name
           if listing.owner_email
@@ -35,6 +46,23 @@ block content
                 a.tag(href=`/tags/${tag.id}`)= tag.name
         else
           p.text-muted No tags available
+
+    if loggedInUser && listing.user_id != loggedInUser.id
+      section.swap-request
+        form.form-card(action="/swaps/request" method="POST")
+          h2 Request a swap
+          input(type="hidden" name="target_listing_id" value=listing.id)
+          if myListings && myListings.length
+            .form-group
+              label(for="my_listing_id") Choose one of your listings
+              select.form-control(name="my_listing_id" id="my_listing_id" required)
+                each ml in myListings
+                  option(value=ml.id)= `${ml.title} (has: ${ml.has_item || '—'} / wants: ${ml.wants_item || '—'})`
+            button.btn.btn-primary(type="submit") Send swap request
+          else
+            p.text-muted You don’t have any listings yet. Add one first to request a swap.
+            p
+              a.btn.btn-secondary(href="/listings/new") + Add listing
 
     section.listing-ratings
       h2 Ratings
@@ -62,5 +90,16 @@ block content
           label(for="comment") Comment:
           textarea.form-control(name="comment" id="comment" rows="3")
         button.btn.btn-primary(type="submit") Submit Rating
+
+    if recommendations && recommendations.length
+      section.recommendations
+        h2 Recommended listings
+        ul.listings-page-list
+          each rec in recommendations
+            li.listing-row
+              a.listing-row-title(href=`/listings/${rec.id}`)= rec.title
+              if rec.has_item || rec.wants_item
+                p.listing-row-desc
+                  | Has: #{rec.has_item || '—'} · Wants: #{rec.wants_item || '—'}
   else
     .alert.alert-error Listing not found
