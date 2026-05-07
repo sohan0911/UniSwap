@@ -1,0 +1,43 @@
+extends layout
+
+block vars
+  - var title = "Swaps"
+  - var activeNav = "swaps"
+
+block content
+  .page-header
+    h1 Swap requests
+    p.page-lead Manage pending requests and view swap history.
+
+  if swaps && swaps.length
+    ul.listings-page-list
+      each s in swaps
+        li.listing-row
+          p
+            strong Status:&nbsp;
+            span= s.status
+          p
+            strong Requester:&nbsp;
+            a(href=`/users/${s.requester_id}`)= s.requester_name
+            |  ·&nbsp;
+            a(href=`/listings/${s.requester_listing_id}`)= s.requester_listing_title
+          p
+            strong Responder:&nbsp;
+            a(href=`/users/${s.responder_id}`)= s.responder_name
+            |  ·&nbsp;
+            a(href=`/listings/${s.responder_listing_id}`)= s.responder_listing_title
+
+          if s.status === 'pending' && s.responder_id == userId
+            form(action=`/swaps/${s.id}/accept` method="POST" style="display:inline-block;margin-right:8px;")
+              button.btn.btn-primary(type="submit") Accept
+            form(action=`/swaps/${s.id}/reject` method="POST" style="display:inline-block;")
+              button.btn.btn-secondary(type="submit") Reject
+          if s.status === 'accepted' && (s.requester_id == userId || s.responder_id == userId)
+            form(action=`/swaps/${s.id}/complete` method="POST" style="display:inline-block;margin-right:8px;")
+              button.btn.btn-primary(type="submit") Mark completed
+
+          p(style="margin-top:8px;")
+            a.btn.btn-secondary(href=`/swaps/${s.id}/chat`) Message user
+  else
+    .alert.alert-warning No swap requests yet.
+

@@ -8,6 +8,7 @@ html
       a(href="/listings") ← Back to listings
     h1 Add a listing
     if error
+<<<<<<< Updated upstream
       p.error-msg= error
     form(method="POST", action="/listings")
       p
@@ -15,6 +16,13 @@ html
         br
         input#user_id(type="number", name="user_id", min="1", value=(body && body.user_id) || "1", required)
       p
+=======
+      .alert.alert-error= error
+
+    form(method="POST", action="/listings" novalidate)
+      p.text-muted Published as #{loggedInUser ? loggedInUser.name : 'Unknown user'}
+      .form-group
+>>>>>>> Stashed changes
         label(for="title") Title
         br
         input#title(type="text", name="title", value=(body && body.title) || "", required)
