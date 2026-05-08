@@ -1,7 +1,11 @@
-// Import express.js
 const express = require("express");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
 
-var app = express();
+const db = require("./services/db");
+const migrate = require("./services/migrate");
+
+const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -10,14 +14,31 @@ app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 
 app.use(express.static("public"));
+app.use(express.static("static"));
 
-const db = require("./services/db");
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "uniswap-secret-key-123",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
+app.use((req, res, next) => {
+  res.locals.loggedInUser = req.session.user || null;
+  next();
+});
+
+function requireLogin(req, res, next) {
+  if (!req.session.user) return res.redirect("/login");
+  next();
+}
+
+// ---------------- HOME PAGE ----------------
 app.get("/", async function (req, res) {
   try {
     const sql = "SELECT * FROM listings ORDER BY id DESC LIMIT 3";
     const listings = await db.query(sql);
-    console.log("[GET /] recent listings count:", listings ? listings.length : 0);
     res.render("index", { listings });
   } catch (error) {
     console.error("[GET /]", error);
@@ -25,29 +46,21 @@ app.get("/", async function (req, res) {
   }
 });
 
+// ---------------- TEST ROUTES ----------------
 app.get("/db_test", function (req, res) {
-  sql = "select * from listings";
-  db.query(sql).then((results) => {
-    console.log(results);
-    res.send(results);
-  });
+  const sql = "SELECT * FROM listings";
+  db.query(sql).then((results) => res.send(results));
 });
 
-app.get("/goodbye", function (req, res) {
-  res.send("Goodbye world!");
-});
+app.get("/goodbye", (req, res) => res.send("Goodbye world!"));
+app.get("/hello/:name", (req, res) => res.send("Hello " + req.params.name));
 
-app.get("/hello/:name", function (req, res) {
-  console.log(req.params);
-  res.send("Hello " + req.params.name);
-});
-
+// ---------------- USERS ----------------
 app.get("/users", async function (req, res) {
   try {
     const sql = "SELECT id, name, email FROM users";
     const users = await db.query(sql);
-    console.log("[GET /users] rows:", users ? users.length : 0);
-    res.render("users", { users: users });
+    res.render("users", { users });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching users");
@@ -56,17 +69,36 @@ app.get("/users", async function (req, res) {
 
 app.get("/users/:id", async function (req, res) {
   try {
-    const userId = req.params.id;
-    const sql = "SELECT * FROM users WHERE id = ?";
-    const results = await db.query(sql, [userId]);
+    const userId = parseInt(req.params.id, 10);
+    const userSql = `
+      SELECT u.*,
+        COALESCE(ur.avg_rating, 0) AS avg_rating,
+        COALESCE(ur.rating_count, 0) AS rating_count
+      FROM users u
+      LEFT JOIN (
+        SELECT rated_user_id, AVG(rating) AS avg_rating, COUNT(*) AS rating_count
+        FROM user_ratings
+        GROUP BY rated_user_id
+      ) ur ON ur.rated_user_id = u.id
+      WHERE u.id = ?
+      LIMIT 1
+    `;
+    const results = await db.query(userSql, [userId]);
+    if (!results.length) return res.status(404).send("User not found");
 
-    if (results.length === 0) {
-      return res.status(404).send("User not found");
-    }
+    const ratings = await db.query(
+      `
+        SELECT r.rating, r.comment, r.created_at, u.name AS rater_name
+        FROM user_ratings r
+        JOIN users u ON u.id = r.rater_user_id
+        WHERE r.rated_user_id = ?
+        ORDER BY r.created_at DESC
+        LIMIT 10
+      `,
+      [userId]
+    );
 
-<<<<<<< Updated upstream
     res.render("user-profile", { user: results[0] });
-=======
     let completedSwapsBetween = [];
     if (req.session.user && req.session.user.id && req.session.user.id !== userId) {
       const me = req.session.user.id;
@@ -91,13 +123,16 @@ app.get("/users/:id", async function (req, res) {
     }
 
     res.render("user-profile", { user: results[0], ratings, completedSwapsBetween });
->>>>>>> Stashed changes
+=======
+    res.render("user-profile", { user: results[0], ratings });
+
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching user profile");
   }
 });
 
+// ---------------- TAGS ----------------
 app.get("/tags", async function (req, res) {
   try {
     const tags = await db.query("SELECT id, name FROM tags ORDER BY name");
@@ -116,7 +151,6 @@ app.get("/tags/:id", async function (req, res) {
       "JOIN listing_tags lt ON l.id = lt.listing_id " +
       "WHERE lt.tag_id = ?";
     const listings = await db.query(sql, [tagId]);
-    console.log("[GET /tags/:id] listings count:", listings ? listings.length : 0);
     res.render("listings", { listings });
   } catch (error) {
     console.error(error);
@@ -124,6 +158,7 @@ app.get("/tags/:id", async function (req, res) {
   }
 });
 
+// ---------------- LISTINGS ----------------
 const listingsWithTagsSql =
   "SELECT l.*, " +
   "(SELECT GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR ', ') " +
@@ -137,11 +172,11 @@ function listingsSqlFallback() {
   return "SELECT * FROM listings ORDER BY id DESC";
 }
 
-<<<<<<< Updated upstream
 app.get("/listings/new", function (req, res) {
-=======
 app.get("/listings/new", requireLogin, (req, res) => {
->>>>>>> Stashed changes
+=======
+app.get("/listings/new", (req, res) => {
+
   res.render("listing-form", { error: null, body: {} });
 });
 
@@ -149,14 +184,14 @@ app.post("/listings", async function (req, res) {
   try {
     const title = (req.body.title || "").trim();
     const description = (req.body.description || "").trim();
-<<<<<<< Updated upstream
     const userId = parseInt(req.body.user_id, 10);
+    const hasItem = (req.body.has_item || "").trim();
+    const wantsItem = (req.body.wants_item || "").trim();
     const tagsRaw = req.body.tags || "";
 
-    if (!title || !description || !userId) {
+    if (!title || !description || !userId || !hasItem || !wantsItem) {
       return res.status(400).render("listing-form", {
         error: "Title, description, and user ID are required.",
-=======
     const userId = req.session.user ? req.session.user.id : null;
     const hasItem = (req.body.has_item || "").trim();
     const wantsItem = (req.body.wants_item || "").trim();
@@ -167,17 +202,19 @@ app.post("/listings", async function (req, res) {
     if (!title || !description || !hasItem || !wantsItem) {
       return res.status(400).render("listing-form", {
         error: "Title, description, and swap fields (has/wants) are required.",
->>>>>>> Stashed changes
+=======
+        error: "Title, description, user ID, and swap fields (has/wants) are required.",
+
         body: req.body,
       });
     }
 
     const insertResult = await db.query(
-      "INSERT INTO listings (title, description, user_id) VALUES (?, ?, ?)",
-      [title, description, userId]
+      "INSERT INTO listings (title, description, user_id, has_item, wants_item) VALUES (?, ?, ?, ?, ?)",
+      [title, description, userId, hasItem, wantsItem]
     );
+
     const listingId = insertResult.insertId;
-    console.log("[POST /listings] created listing id:", listingId);
 
     const tagNames = tagsRaw
       .split(",")
@@ -186,23 +223,18 @@ app.post("/listings", async function (req, res) {
 
     for (const name of tagNames) {
       await db.query("INSERT IGNORE INTO tags (name) VALUES (?)", [name]);
-      const rows = await db.query(
-        "SELECT id FROM tags WHERE name = ? LIMIT 1",
-        [name]
-      );
+      const rows = await db.query("SELECT id FROM tags WHERE name = ? LIMIT 1", [name]);
       const tagId = rows[0].id;
-      await db.query(
-        "INSERT IGNORE INTO listing_tags (listing_id, tag_id) VALUES (?, ?)",
-        [listingId, tagId]
-      );
+      await db.query("INSERT IGNORE INTO listing_tags (listing_id, tag_id) VALUES (?, ?)", [listingId, tagId]);
     }
+
+    await db.query("UPDATE users SET points = COALESCE(points, 0) + 5 WHERE id = ?", [userId]);
 
     res.redirect("/listings/" + listingId);
   } catch (err) {
     console.error("[POST /listings]", err);
     res.status(500).render("listing-form", {
-      error:
-        "Could not create listing. Ensure `tags` and `listing_tags` tables exist (see database/tags_schema.sql).",
+      error: "Could not create listing.",
       body: req.body,
     });
   }
@@ -346,19 +378,7 @@ app.get("/listings", async (req, res) => {
     try {
       listings = await db.query(listingsWithTagsSql, []);
     } catch (e) {
-      console.warn(
-        "[GET /listings] grouped tags query failed, using simple SELECT:",
-        e.message
-      );
       listings = await db.query(listingsSqlFallback(), []);
-    }
-    console.log(
-      "[GET /listings] count:",
-      listings ? listings.length : 0,
-      Array.isArray(listings) ? "" : typeof listings
-    );
-    if (!listings || listings.length === 0) {
-      console.log("[GET /listings] results empty — check MySQL data in `listings`");
     }
     res.render("listings", { listings: listings || [] });
   } catch (err) {
@@ -367,54 +387,160 @@ app.get("/listings", async (req, res) => {
   }
 });
 
+// ---------------- LISTING DETAIL + RATINGS ----------------
 app.get("/listings/:id", async (req, res) => {
   try {
     const id = req.params.id;
+
     const listingSql =
       "SELECT l.*, u.name AS owner_name, u.email AS owner_email " +
       "FROM listings l " +
       "JOIN users u ON l.user_id = u.id " +
       "WHERE l.id = ?";
-    let listingRows;
-    try {
-      listingRows = await db.query(listingSql, [id]);
-    } catch (e) {
-      console.warn("[GET /listings/:id] join failed, falling back:", e.message);
-      listingRows = await db.query("SELECT * FROM listings WHERE id = ?", [id]);
-    }
+    const listingRows = await db.query(listingSql, [id]);
 
-    if (!listingRows || listingRows.length === 0) {
-      return res.status(404).send("Listing not found");
-    }
+    if (!listingRows || listingRows.length === 0) return res.status(404).send("Listing not found");
 
     const listing = listingRows[0];
 
-    let tags = [];
+    const tagsSql =
+      "SELECT t.id, t.name " +
+      "FROM tags t " +
+      "JOIN listing_tags lt ON t.id = lt.tag_id " +
+      "WHERE lt.listing_id = ? " +
+      "ORDER BY t.name";
+    const tags = await db.query(tagsSql, [id]);
+
+    const ratingsSql = `
+      SELECT r.rating, r.comment, r.created_at, u.name AS user_name
+      FROM listing_ratings r
+      JOIN users u ON r.user_id = u.id
+      WHERE r.listing_id = ?
+      ORDER BY r.created_at DESC
+    `;
+    const ratings = await db.query(ratingsSql, [id]);
+
+    const recsSql = `
+      SELECT l2.*, COUNT(*) AS shared_tags
+      FROM listing_tags lt
+      JOIN listing_tags lt2 ON lt.tag_id = lt2.tag_id
+      JOIN listings l2 ON l2.id = lt2.listing_id
+      WHERE lt.listing_id = ? AND l2.id <> ?
+      GROUP BY l2.id
+      ORDER BY shared_tags DESC, l2.id DESC
+      LIMIT 5
+    `;
+    let recommendations = [];
     try {
-      const tagsSql =
-        "SELECT t.id, t.name " +
-        "FROM tags t " +
-        "JOIN listing_tags lt ON t.id = lt.tag_id " +
-        "WHERE lt.listing_id = ? " +
-        "ORDER BY t.name";
-      tags = await db.query(tagsSql, [id]);
+      recommendations = await db.query(recsSql, [id, id]);
     } catch (e) {
-      console.warn("[GET /listings/:id] tags query failed:", e.message);
+      recommendations = [];
     }
 
-    console.log("[GET /listings/:id] id:", id, "tags:", tags.length);
-    res.render("listing-detail", { listing, tags });
+    let myListings = [];
+    if (req.session.user) {
+      myListings = await db.query(
+        "SELECT id, title, has_item, wants_item FROM listings WHERE user_id = ? ORDER BY id DESC",
+        [req.session.user.id]
+      );
+    }
+
+    res.render("listing-detail", { listing, tags, ratings, recommendations, myListings });
   } catch (err) {
     console.error("[GET /listings/:id]", err);
     res.status(500).send("Error fetching listing details");
   }
 });
 
-app.listen(3000, function () {
-  console.log(`Server running at http://127.0.0.1:3000/`);
+// ---------------- AUTH ----------------
+app.get("/register", function (req, res) {
+  res.render("register");
 });
-<<<<<<< Updated upstream
-=======
+
+app.post("/register", async function (req, res) {
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) return res.send("All fields are required");
+    if (password.length < 6) return res.send("Password must be at least 6 characters");
+
+    const existing = await db.query("SELECT id FROM users WHERE email = ? LIMIT 1", [email]);
+    if (existing.length) return res.send("Email already exists");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query("INSERT INTO users (name, email, password, points) VALUES (?, ?, ?, 0)", [
+      name,
+      email,
+      hashedPassword,
+    ]);
+
+    res.redirect("/login");
+  } catch (err) {
+    console.error("[POST /register]", err);
+    res.status(500).send("Could not register");
+  }
+});
+
+app.get("/signup", function (req, res) {
+  res.render("signup", { error: null, body: {} });
+});
+
+app.post("/signup", async function (req, res) {
+  try {
+    const { name, email, course, year, password } = req.body;
+    if (!name || !email || !password) {
+      return res
+        .status(400)
+        .render("signup", { error: "Name, email, and password are required.", body: req.body });
+    }
+
+    const existing = await db.query("SELECT id FROM users WHERE email = ? LIMIT 1", [email]);
+    if (existing && existing.length > 0) {
+      return res.status(400).render("signup", { error: "Email already exists.", body: req.body });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const result = await db.query(
+      "INSERT INTO users (name, email, course, year, password, points) VALUES (?, ?, ?, ?, ?, 0)",
+      [name, email, course || null, year || null, hashedPassword]
+    );
+
+    req.session.user = { id: result.insertId, name, email, course, year };
+    res.redirect("/");
+  } catch (err) {
+    console.error("[POST /signup]", err);
+    res.status(500).render("signup", { error: "Could not create user.", body: req.body });
+  }
+});
+
+app.get("/login", function (req, res) {
+  res.render("login", { error: null });
+});
+
+app.post("/login", async function (req, res) {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).render("login", { error: "Email and password are required." });
+    }
+
+    const rows = await db.query("SELECT * FROM users WHERE email = ? LIMIT 1", [email]);
+    const user = rows[0];
+    if (!user) return res.status(401).render("login", { error: "Invalid credentials." });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).render("login", { error: "Invalid credentials." });
+
+    req.session.user = { id: user.id, name: user.name, email: user.email, course: user.course, year: user.year };
+    res.redirect("/");
+  } catch (err) {
+    console.error("[POST /login]", err);
+    res.status(500).render("login", { error: "Error during login." });
+  }
+});
+
+app.get("/logout", function (req, res) {
+  req.session.destroy(() => res.redirect("/"));
+});
 
 app.post("/register", async function (req, res) {
   try {
@@ -860,6 +986,27 @@ app.post("/users/:id/rate", requireLogin, async (req, res) => {
         VALUES (?, ?, ?, ?, ?)
       `,
       [raterUserId, ratedUserId, rating, comment || null, swapId]
+
+    if (!ratedUserId || ratedUserId === raterUserId) return res.status(400).send("Invalid user");
+    if (!rating || rating < 1 || rating > 5) return res.status(400).send("Rating must be 1-5");
+
+    const allowed = await db.query(
+      `
+        SELECT id FROM swaps
+        WHERE status = 'accepted'
+          AND ((requester_id = ? AND responder_id = ?) OR (requester_id = ? AND responder_id = ?))
+        LIMIT 1
+      `,
+      [raterUserId, ratedUserId, ratedUserId, raterUserId]
+    );
+    if (!allowed.length) return res.status(403).send("You can only rate after an accepted swap.");
+
+    await db.query(
+      `
+        INSERT INTO user_ratings (rater_user_id, rated_user_id, rating, comment)
+        VALUES (?, ?, ?, ?)
+      `,
+      [raterUserId, ratedUserId, rating, comment || null]
     );
 
     res.redirect("/users/" + ratedUserId);
@@ -902,4 +1049,5 @@ app.post("/users/:id/rate", requireLogin, async (req, res) => {
 })();
 
 module.exports = app;
->>>>>>> Stashed changes
+
+

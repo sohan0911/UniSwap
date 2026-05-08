@@ -137,6 +137,7 @@ async function ensure(db) {
         requester_listing_id INT NOT NULL,
         responder_listing_id INT NOT NULL,
         status ENUM('pending','accepted','rejected','completed') NOT NULL DEFAULT 'pending',
+        status ENUM('pending','accepted','rejected') NOT NULL DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NULL DEFAULT NULL,
         INDEX idx_requester_id (requester_id),

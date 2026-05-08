@@ -26,6 +26,8 @@ html(lang="en")
             li: a.nav-link(href="/matches" class=(activeNav==="matches" ? "is-active" : "")) Matches
             li: a.nav-link(href="/swaps" class=(activeNav==="swaps" ? "is-active" : "")) Swaps
             li: a.nav-link(href="/messages" class=(activeNav==="messages" ? "is-active" : "")) Messages
+            li: a.nav-link(href="/matches" class=(activeNav==="matches" ? "is-active" : "")) Matches
+            li: a.nav-link(href="/swaps" class=(activeNav==="swaps" ? "is-active" : "")) Swaps
             li: a.nav-link(href=`/users/${loggedInUser.id}`) My Profile
             li: a.nav-link.nav-link-danger(href="/logout") Logout
           else

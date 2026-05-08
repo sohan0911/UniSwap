@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 html
     head
         title UniSwap - User Profile
@@ -75,7 +74,6 @@ html
                     span= user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'
         else
             p User not found.
-=======
 extends layout
 
 block vars
@@ -135,6 +133,7 @@ block content
             textarea.form-control(name="comment" id="comment" rows="3")
           if completedSwapsBetween && completedSwapsBetween.length
             button.btn.btn-primary(type="submit") Submit rating
+          button.btn.btn-primary(type="submit") Submit rating
 
     if ratings && ratings.length
       section.user-ratings
@@ -147,4 +146,5 @@ block content
             p.text-muted By #{r.rater_name}
   else
     .alert.alert-error User not found.
->>>>>>> Stashed changes
+
+

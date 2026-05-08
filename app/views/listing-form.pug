@@ -1,14 +1,18 @@
-doctype html
-html
-  head
-    title New listing – UniSwap
-    link(rel="stylesheet", href="/styles.css")
-  body.page-shell
-    p
-      a(href="/listings") ← Back to listings
+extends layout
+
+block vars
+  - var title = "Add Listing"
+  - var activeNav = "listings"
+
+block content
+  p.nav-back
+    a(href="/listings") ← Back to listings
+
+  .form-card
     h1 Add a listing
+    p.form-lead Share something useful with other students.
+
     if error
-<<<<<<< Updated upstream
       p.error-msg= error
     form(method="POST", action="/listings")
       p
@@ -16,24 +20,33 @@ html
         br
         input#user_id(type="number", name="user_id", min="1", value=(body && body.user_id) || "1", required)
       p
-=======
       .alert.alert-error= error
 
     form(method="POST", action="/listings" novalidate)
       p.text-muted Published as #{loggedInUser ? loggedInUser.name : 'Unknown user'}
       .form-group
->>>>>>> Stashed changes
+=======
+      .alert.alert-error= error
+
+    form(method="POST", action="/listings" novalidate)
+      .form-group
+        label(for="user_id") Seller user ID
+        input.form-input#user_id(type="number", name="user_id", min="1", value=(body && body.user_id) || "1", required)
+      .form-group
+
         label(for="title") Title
-        br
-        input#title(type="text", name="title", value=(body && body.title) || "", required)
-      p
+        input.form-input#title(type="text", name="title", value=(body && body.title) || "", required)
+      .form-group
         label(for="description") Description
-        br
-        textarea#description(name="description", rows="5", cols="50", required)
-          = body && body.description ? body.description : ""
-      p
-        label(for="tags") Tags (comma-separated)
-        br
-        input#tags(type="text", name="tags", placeholder="books, math, used", value=(body && body.tags) || "")
-      p
-        button.btn.btn-primary(type="submit") Publish listing
+        textarea.form-textarea#description(name="description", rows="5", required)= body && body.description ? body.description : ""
+      .form-group
+        label(for="has_item") I have
+        input.form-input#has_item(type="text", name="has_item", placeholder="e.g. Java notes", value=(body && body.has_item) || "", required)
+      .form-group
+        label(for="wants_item") I want
+        input.form-input#wants_item(type="text", name="wants_item", placeholder="e.g. Python past papers", value=(body && body.wants_item) || "", required)
+      .form-group
+        label(for="tags") Tags
+        input.form-input#tags(type="text", name="tags", placeholder="books, math, used", value=(body && body.tags) || "")
+        p.form-hint Comma-separated.
+      button.btn.btn-primary.btn-block(type="submit") Publish listing
