@@ -1,0 +1,29 @@
+extends layout
+
+block vars
+  - var title = "Messages"
+  - var activeNav = "messages"
+
+block content
+  .page-header
+    h1 Messages
+    p.page-lead Your conversations with other users.
+
+  if conversations && conversations.length
+    ul.listings-page-list
+      each c in conversations
+        li.listing-row
+          p
+            strong= c.other_user_name
+            |  ·&nbsp;
+            span.text-muted Swap: #{c.status}
+          if c.latest_message
+            p= c.latest_message.length > 120 ? c.latest_message.substring(0, 120) + '…' : c.latest_message
+            p.text-muted= c.latest_message_at ? new Date(c.latest_message_at).toLocaleString() : ''
+          else
+            p.text-muted No messages yet.
+          p(style="margin-top:8px;")
+            a.btn.btn-secondary(href=`/swaps/${c.swap_id}/chat`) Open chat
+  else
+    .alert.alert-warning No conversations yet. Start by requesting a swap, then message from the swap page.
+

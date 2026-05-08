@@ -1,0 +1,30 @@
+extends layout
+
+block vars
+  - var title = "My Listings"
+  - var activeNav = "my-listings"
+
+block content
+  .page-header
+    h1 My listings
+    p.page-lead Manage the resources you’ve posted.
+    p
+      a.btn.btn-primary(href="/listings/new") + Add listing
+
+  if listings && listings.length
+    ul.listings-page-list
+      each listing in listings
+        li.listing-row
+          a.listing-row-title(href=`/listings/${listing.id}`)= listing.title
+          p.listing-row-desc= listing.description
+          if listing.tag_names
+            p.listing-tags-line
+              span Tags:&nbsp;
+              span.tag-names-text= listing.tag_names
+          p(style="margin-top:8px;")
+            a.btn.btn-secondary(href=`/my-listings/${listing.id}/edit` style="margin-right:8px;") Edit
+            form(action=`/my-listings/${listing.id}/delete` method="POST" style="display:inline-block;")
+              button.btn.btn-secondary(type="submit") Delete
+  else
+    .alert.alert-warning You haven’t added any listings yet.
+

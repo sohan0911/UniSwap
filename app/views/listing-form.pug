@@ -13,6 +13,19 @@ block content
     p.form-lead Share something useful with other students.
 
     if error
+      p.error-msg= error
+    form(method="POST", action="/listings")
+      p
+        label(for="user_id") Seller user ID
+        br
+        input#user_id(type="number", name="user_id", min="1", value=(body && body.user_id) || "1", required)
+      p
+      .alert.alert-error= error
+
+    form(method="POST", action="/listings" novalidate)
+      p.text-muted Published as #{loggedInUser ? loggedInUser.name : 'Unknown user'}
+      .form-group
+=======
       .alert.alert-error= error
 
     form(method="POST", action="/listings" novalidate)
@@ -20,6 +33,7 @@ block content
         label(for="user_id") Seller user ID
         input.form-input#user_id(type="number", name="user_id", min="1", value=(body && body.user_id) || "1", required)
       .form-group
+
         label(for="title") Title
         input.form-input#title(type="text", name="title", value=(body && body.title) || "", required)
       .form-group

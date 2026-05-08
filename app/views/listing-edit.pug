@@ -1,0 +1,34 @@
+extends layout
+
+block vars
+  - var title = "Edit Listing"
+  - var activeNav = "my-listings"
+
+block content
+  p.nav-back
+    a(href="/my-listings") ← Back to My listings
+
+  .form-card
+    h1 Edit listing
+    if error
+      .alert.alert-error= error
+
+    form(method="POST", action=`/my-listings/${listing.id}/edit` novalidate)
+      .form-group
+        label(for="title") Title
+        input.form-input#title(type="text", name="title", value=listing.title || "", required)
+      .form-group
+        label(for="description") Description
+        textarea.form-textarea#description(name="description", rows="5", required)= listing.description || ""
+      .form-group
+        label(for="has_item") I have
+        input.form-input#has_item(type="text", name="has_item", value=listing.has_item || "", required)
+      .form-group
+        label(for="wants_item") I want
+        input.form-input#wants_item(type="text", name="wants_item", value=listing.wants_item || "", required)
+      .form-group
+        label(for="tags") Tags
+        input.form-input#tags(type="text", name="tags", value=tags || "")
+        p.form-hint Comma-separated.
+      button.btn.btn-primary.btn-block(type="submit") Save changes
+

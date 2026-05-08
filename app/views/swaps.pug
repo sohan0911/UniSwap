@@ -32,6 +32,12 @@ block content
               button.btn.btn-primary(type="submit") Accept
             form(action=`/swaps/${s.id}/reject` method="POST" style="display:inline-block;")
               button.btn.btn-secondary(type="submit") Reject
+          if s.status === 'accepted' && (s.requester_id == userId || s.responder_id == userId)
+            form(action=`/swaps/${s.id}/complete` method="POST" style="display:inline-block;margin-right:8px;")
+              button.btn.btn-primary(type="submit") Mark completed
+
+          p(style="margin-top:8px;")
+            a.btn.btn-secondary(href=`/swaps/${s.id}/chat`) Message user
   else
     .alert.alert-warning No swap requests yet.
 

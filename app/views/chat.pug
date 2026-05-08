@@ -1,0 +1,52 @@
+extends layout
+
+block vars
+  - var title = "Chat"
+  - var activeNav = "messages"
+
+block content
+  .chat-shell
+    aside.chat-sidebar
+      .chat-sidebar-header
+        h2 Chats
+        p.text-muted Your conversations
+
+      if conversations && conversations.length
+        ul.chat-convo-list
+          each c in conversations
+            li(class=(c.swap_id == swapId ? "chat-convo is-active" : "chat-convo"))
+              a.chat-convo-link(href=`/swaps/${c.swap_id}/chat`)
+                .chat-convo-title
+                  strong= c.other_user_name
+                  span.chat-convo-meta= c.latest_message_at ? new Date(c.latest_message_at).toLocaleDateString() : ""
+                if c.latest_message
+                  p.chat-convo-preview= c.latest_message.length > 60 ? c.latest_message.substring(0, 60) + '…' : c.latest_message
+                else
+                  p.chat-convo-preview.text-muted No messages yet
+      else
+        .alert.alert-warning No conversations yet.
+
+    section.chat-main
+      .chat-main-header
+        .chat-main-title
+          h1= otherUserName
+          if swap && swap.status
+            p.text-muted Swap status: #{swap.status}
+
+      .chat-messages
+        if messages && messages.length
+          each m in messages
+            - const isMine = Number(m.sender_id) === Number(userId)
+            .chat-message(class=isMine ? "is-mine" : "is-theirs")
+              .chat-bubble
+                if !isMine
+                  p.chat-sender= m.sender_name
+                p.chat-text= m.message
+                p.chat-time.text-muted= m.created_at ? new Date(m.created_at).toLocaleString() : ""
+        else
+          .alert.alert-warning No messages yet. Say hello to start the chat.
+
+      form.chat-input(action=`/swaps/${swapId}/chat` method="POST")
+        textarea.form-textarea.chat-textarea(name="message" placeholder="Type a message…" rows="2" required)
+        button.btn.btn-primary(type="submit") Send
+
